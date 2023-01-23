@@ -1,2 +1,3 @@
-# SDL-Instagram-Crawler
-自主學習計畫 - Instagram爬蟲
+# Instagram-Spider 🕷️
+
+> A sample for Instagram stories crawler
