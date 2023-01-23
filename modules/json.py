@@ -1,0 +1,58 @@
+from typing import Any, Optional, Union
+
+import orjson
+
+class Json:
+    """
+    基於orjson的改良版本。
+    """
+    @staticmethod
+    def dumps(data: Any,
+        option: Optional[int]=None
+    ) -> str:
+        """
+        將`data`轉換為字串。
+        
+        :param data: 輸入資料。
+        :param option: orjson選項。
+        """
+        if option != None: return orjson.dumps(data, option=option).decode('utf-8')
+        return orjson.dumps(data).decode('utf-8')
+
+    @staticmethod
+    def loads(data: Union[bytes, bytearray, memoryview, str]) -> Any:
+        """
+        將`data`轉換為資料。
+        
+        :param data: 輸入文字。
+        """
+        return orjson.loads(data)
+
+    @staticmethod
+    def dump(
+        file: str,
+        data: Any,
+        option: int = orjson.OPT_INDENT_2
+    ) -> None:
+        """
+        將`data`儲存於`file`中。
+        
+        :param file: 文件路徑。
+        :param data: 輸入資料。
+        :param option: orjson選項。
+        """
+        with open(file, mode='wb') as in_file:
+            in_file.write(orjson.dumps(data, option=option))
+            in_file.close()
+
+    @staticmethod
+    def load(file: str) -> Any:
+        """
+        從`file`中讀取資料。
+        
+        :param file: 文件路徑。
+        """
+        with open(file, mode='rb') as in_file:
+            data = in_file.read()
+            in_file.close()
+        return orjson.loads(data.decode("utf-8"))
