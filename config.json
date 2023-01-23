@@ -1,0 +1,33 @@
+{
+  "cookies": {
+    "//":"Fill your own COOKIES below"
+  },
+  "headers": {
+    "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36 OPR/93.0.0.0 (Edition GX-CN)",
+    "sec-fetch-site": "same-origin",
+
+    "//":"Fill your own x-ig-app-id below",
+    "x-ig-app-id": "",
+
+    "//":"Fill your own x-csrftoken below",
+    "x-csrftoken": "",
+
+    "sec-ch-ua": "\"Opera GX\";v=\"93\", \"Not/A)Brand\";v=\"8\", \"Chromium\";v=\"107\"",
+    "sec-ch-ua-mobile": "?0",
+    "sec-ch-ua-platform": "Windows",
+    "sec-fetch-dest": "document",
+    "sec-fetch-mode": "navigate"
+  },
+  "logging": {
+    "main": {
+      "stream-level": "INFO",
+      "file-level": "INFO",
+      "backup-count": 5,
+      "file-name": "main",
+      "dir-path": "logs"
+    }
+  },
+  "update-frequency": 10,
+  "timezone": 8,
+  "timeout": 5
+}
