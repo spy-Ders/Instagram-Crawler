@@ -14,9 +14,8 @@ async def main():
     ids = list(all_user.keys())[:10]
     data = await Instagram.get_info(ids)
     dt = datetime.now().strftime("%Y%m%d %H-%M-%S")
-    async with aopen(f"results\\{dt} __output__.json", mode="wb") as _file:
+    async with aopen(f"results\\{dt} InstaStory__output__.json", mode="wb") as _file:
         await _file.write(dumps(data, option=OPT_INDENT_2))
-
 
 if __name__ == "__main__":
     if system() == "Windows":

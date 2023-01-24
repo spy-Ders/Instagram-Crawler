@@ -1,7 +1,0 @@
-[2023-01-24 00:31:26.431056+08:00][main][ERROR]: Requests Error: Traceback (most recent call last):
-  File "c:\Users\glzma\Documents\!code\python\Instagram-Crawler-master\aiorequests\async_requests.py", line 71, in requests
-    result = await res.json()
-  File "C:\Users\glzma\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.10_qbz5n2kfra8p0\LocalCache\local-packages\Python310\site-packages\aiohttp\client_reqrep.py", line 1097, in json
-    raise ContentTypeError(
-aiohttp.client_exceptions.ContentTypeError: 0, message='Attempt to decode JSON with unexpected mimetype: text/html; charset="utf-8"', url=URL('https://www.instagram.com/accounts/login/?next=/api/v1/feed/reels_tray/')
-
