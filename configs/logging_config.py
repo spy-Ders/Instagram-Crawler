@@ -1,4 +1,4 @@
-from .config import *
+from .config import LOGGING_CONFIG, TIMEZONE
 
 from logging import Formatter, getLevelName, getLogger, LogRecord, NOTSET, StreamHandler
 from os import fspath, listdir, makedirs, remove, rename

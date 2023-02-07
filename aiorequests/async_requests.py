@@ -1,4 +1,4 @@
-from modules import Json
+from utils import Json
 from configs import HEADERS, COOKIES, TIMEOUT
 
 from logging import getLogger

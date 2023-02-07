@@ -1,21 +1,27 @@
-from configs import logger_init
+from configs import logger_init, TIMEZONE
+from instagram import Instagram
+from utils import Json
 
 from asyncio import new_event_loop, set_event_loop_policy, WindowsSelectorEventLoopPolicy
+from datetime import datetime
+from os import makedirs
+from os.path import isdir
 from platform import system
 
 async def main():
-    
-    from instagram import Instagram
-    from datetime import datetime
-    from aiofiles import open as aopen
-    from orjson import dumps, OPT_INDENT_2
+    # 抓取資料
+    users = await Instagram.get_user_data(10)
+    data = await Instagram.get_info(users.keys())
 
-    all_user = await Instagram.get_user_data()
-    ids = list(all_user.keys())[:10]
-    data = await Instagram.get_info(ids)
-    dt = datetime.now().strftime("%Y%m%d %H-%M-%S")
-    async with aopen(f"results\\{dt} InstaStory__output__.json", mode="wb") as _file:
-        await _file.write(dumps(data, option=OPT_INDENT_2))
+    # 檢查資料夾是否存在
+    if not isdir("results"):
+        makedirs("results")
+    
+    # 輸出至檔案
+    await Json.dump(
+        f"results/{datetime.now(TIMEZONE).isoformat().replace(':', '-')} InstaStory__output__.json",
+        data
+    )
 
 if __name__ == "__main__":
     if system() == "Windows":

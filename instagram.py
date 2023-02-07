@@ -1,5 +1,5 @@
 from asyncio import create_task, gather
-from typing import Optional, Union
+from typing import Iterable, Optional, Union
 
 from aiohttp import ClientSession
 from aiorequests import new_session, requests
@@ -16,7 +16,7 @@ class InstagramFriendship(BaseModel):
     is_restricted: Optional[bool]=None
     is_feed_favorite: Optional[bool]=None
 
-class InstagramUser(BaseModel):
+class StoryUser(BaseModel):
     pk: int
     pk_id: int
     username: str
@@ -30,72 +30,90 @@ class InstagramUser(BaseModel):
 class Instagram:
     @staticmethod
     async def get_info(
-        ids: Optional[Union[list[str], str]]=None,
+        ids: Optional[Union[list[str], str, int]]=None,
         client: Optional[ClientSession]=None
     ) -> dict[str, dict]:
-        # For Debug
-        # from aiofiles import open as aopen
-        # from orjson import loads
-        # async with aopen("debug.json", mode="rb") as _file:
-        #     data: dict[str, dict] = loads(await _file.read())
-        # if type(ids) != list:
-        #     ids = [ids]
-        # results = {}
-        # for id_ in ids:
-        #     val = data.get(id_)
-        #     if val:
-        #         results[id_] = val
-        # return results
+        """
+        取得限時動態資訊。
 
-        need_close = False
-        if client == None:
-            client = new_session()
-            need_close = True
+        :param ids: :class:`list|str|int|None`使用者IDs。
+        :param client: :class:`ClientSession`對話。
+        """
+        # 檢查是否需要開新連線
+        need_close = False if client else True
+        client = client if client else new_session()
         
-        user_data = await Instagram.get_user_data(client=client)
-        l_ids = tuple(user_data.keys())
+        # 檢查目標IDs是否為空
         if ids == None:
-            ids = l_ids
+            # 如果為空，則抓取所有IDs
+            user_data = await Instagram.get_user_data(client=client)
+            ids = list(user_data.keys())
         else:
-            if type(ids) != list:
+            # 如果行不為列表，則轉換為列表
+            if issubclass(type(ids), Iterable) and type(ids) != str:
+                ids = list(ids)
+            elif type(ids) != list:
                 ids = [ids]
-            ids = [id_ for id_ in ids if id_ in l_ids]
+            # 將列表內容轉換為字串
+            ids = list(map(str, ids))
         
         result = {}
         if len(ids) != 0:
+            # 取得資料
             __api_url = "https://www.instagram.com/api/v1/feed/reels_media/?reel_ids="
-            tasks = []
-            for i in range(0, len(ids), 10):
-                tasks.append(create_task(
-                    requests(__api_url + "&reel_ids=".join(ids[i:i+10]), client=client, json=True)
-                ))
-            results: list[dict[str, dict]] = await gather(*tasks)
+            results: list[dict[str, dict]] = await gather(*(
+                create_task(
+                    requests(__api_url + "&reel_ids=".join(ids[i:i+5]), client=client, json=True)
+                )
+                for i in range(0, len(ids), 5)
+            ))
 
+            # 更新資料
             for data in results:
                 result.update(data["reels"])
 
+        # 檢查是否需要關閉連線
         if need_close:
             await client.close()
-        
+
+        # 回傳
         return result
     
     @staticmethod
     async def get_user_data(
+        length: Optional[int]=None,
         client: Optional[ClientSession]=None,
-    ) -> Union[dict[str, InstagramUser], dict[str, dict]]:
-        need_close = False
-        if client == None:
-            client = new_session()
-            need_close = True
+    ) -> Union[dict[str, StoryUser], dict[str, dict]]:
+        """
+        取得目前有發布限動的使用者資料。
+
+        :param length: :class:`int`資料長度。
+        :param client: :class:`ClientSession`對話。
+        """
+        # 檢查是否需要開新連線
+        need_close = False if client else True
+        client = client if client else new_session()
         
+        # 取得資料
         data = await requests("https://www.instagram.com/api/v1/feed/reels_tray/", client=client, json=True)
+        tray = filter(lambda d: d["reel_type"] == "user_reel", data["tray"])
         
+        # 資料長度
+        length = length if length else len(tray)
+
+        # 結果
         result = {
-            d["id"]: InstagramUser(**d["user"])
-            for d in data["tray"] if d["reel_type"] == "user_reel"
+            d["id"]: StoryUser(**d["user"])
+            for d, _ in zip(
+                tray,
+                range(length)
+            )
         }
 
-        if need_close: await client.close()
+        # 檢查是否需要關閉連線
+        if need_close:
+            await client.close()
 
+        # 回傳
         return result
         

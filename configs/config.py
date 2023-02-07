@@ -1,4 +1,4 @@
-from modules import Json
+from utils import Json
 
 from datetime import timedelta, timezone
 from logging import getLevelName
@@ -34,8 +34,6 @@ class LoggingConfig(BaseModel):
 
 # 預設設置
 CONFIG: dict[str, dict] = {
-    "cookies": {
-    },
     "headers": {
         "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36 OPR/93.0.0.0 (Edition GX-CN)",
         "sec-fetch-site": "same-origin",
@@ -47,6 +45,7 @@ CONFIG: dict[str, dict] = {
         "sec-fetch-dest": "document",
         "sec-fetch-mode": "navigate"
     },
+    "cookies": {},
     "logging": {
         "main": {
             "stream-level": "INFO",
@@ -63,7 +62,7 @@ CONFIG: dict[str, dict] = {
 
 # 補全設置
 try:
-    RAW_CONFIG: dict[str, Union[dict, str, int]] = Json.load("config.json")
+    RAW_CONFIG: dict[str, Union[dict, str, int]] = Json.load_nowait("config.json")
     for key, value in RAW_CONFIG.items():
         if type(value) == dict:
             for s_key, s_value in value.items():
@@ -72,7 +71,7 @@ try:
             CONFIG[key] = value
 except: pass
 finally:
-    Json.dump("config.json", CONFIG)
+    Json.dump_nowait("config.json", CONFIG)
 
 COOKIES: dict[str, str] = CONFIG["cookies"]
 HEADERS: dict[str, str] = CONFIG["headers"]
