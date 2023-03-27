@@ -5,8 +5,22 @@ from utils import Json
 from asyncio import new_event_loop, set_event_loop_policy, WindowsSelectorEventLoopPolicy
 from datetime import datetime
 from os import makedirs
-from os.path import isdir
+from os.path import isdir, isfile
 from platform import system
+
+from gen_config import gen_CONFIG
+
+privacy_file = ["config.json"]
+
+for f in privacy_file:
+    
+    if not isfile(f):
+        
+        _ = open(f, "w+")
+        
+        if f == "config.json":
+        
+            gen_CONFIG()
 
 async def main():
     # 抓取資料
